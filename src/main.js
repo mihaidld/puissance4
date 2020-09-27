@@ -1,9 +1,19 @@
 import readlineSync from 'readline-sync'
 import chalk from 'chalk'
+import {
+    NUMBER_ROWS,
+    NUMBER_COLUMNS,
+    NUMBER_WINS,
+    arrayValues,
+    showArray,
+} from './grid.js'
 import rules from './rules.js'
 import help from './help.js'
-import { arrayValues, showArray } from './grid.js'
+import checkImpossible from './checkImpossible.js'
 import { checkHorizontal, checkVertical, checkDiagonal } from './checkWinner.js'
+
+//vérifier si partie impossible
+checkImpossible()
 
 //input des noms des joueurs avec readlineSync et attribution des jetons
 let player1 = readlineSync.question('Joueur 1: Quel est votre nom ? ')
@@ -26,6 +36,7 @@ showArray(arrayValues)
 while (!isFinished) {
     playerNow = counter % 2 === 0 ? player1 : player2
     tokenNow = counter % 2 === 0 ? tokenPlayer1 : tokenPlayer2
+    //afficher le joueur en cours dans le prompt
     let input = readlineSync.prompt({
         prompt: ` ${playerNow}> `,
     })
@@ -33,8 +44,11 @@ while (!isFinished) {
         //jouer
         case input.startsWith('put(') &&
             input.endsWith(')') &&
-            input.length == 6:
-            let columnNumber = input.slice(4, 5)
+            (input.length == 'put()'.length + String(NUMBER_COLUMNS).length ||
+                input.length ==
+                    'put()'.length + String(NUMBER_COLUMNS).length - 1):
+            let columnNumber =
+                input[5] === ')' ? input.slice(4, 5) : input.slice(4, 6)
             counter++
 
             //avertissement si la colonne est déjà remplie et n'est pas une colonne extérieure
@@ -50,19 +64,19 @@ while (!isFinished) {
 
             //avertissement si le nombre de colonne rentré n'est pas valide
             if (
-                columnNumber > 7 ||
+                columnNumber > NUMBER_COLUMNS ||
                 columnNumber < 1 ||
                 columnNumber != Math.floor(columnNumber) ||
                 !isFinite(columnNumber)
             ) {
                 counter--
                 console.log(
-                    'veuillez rentrer un nombre de colonne valide entier entre 1 et 7'
+                    `veuillez rentrer un nombre de colonne valide entier entre 1 et ${NUMBER_COLUMNS}`
                 )
             }
 
             //mise à jour et affichage de la grille
-            for (let i = 5; i >= 0; i--) {
+            for (let i = NUMBER_ROWS - 1; i >= 0; i--) {
                 if (arrayValues[i][columnNumber - 1] === ' ') {
                     arrayValues[i].splice(columnNumber - 1, 1, tokenNow)
                     rowToken = i
@@ -73,23 +87,29 @@ while (!isFinished) {
 
             //vérification si le joueur en cours gagne
             if (checkHorizontal(arrayValues[rowToken], tokenNow) === tokenNow) {
-                console.log(`${playerNow} gagne avec jeton ${tokenNow}`)
+                console.log(
+                    `${playerNow} gagne sur l'horizontale avec jeton ${tokenNow}`
+                )
                 isFinished = true
             }
             if (
                 checkVertical(arrayValues, columnNumber - 1, tokenNow) ===
                 tokenNow
             ) {
-                console.log(`${playerNow} gagne avec jeton ${tokenNow}`)
+                console.log(
+                    `${playerNow} gagne sur la verticale avec jeton ${tokenNow}`
+                )
                 isFinished = true
             }
             if (checkDiagonal(arrayValues, tokenNow) === tokenNow) {
-                console.log(`${playerNow} gagne avec jeton ${tokenNow}`)
+                console.log(
+                    `${playerNow} gagne en diagonale avec jeton ${tokenNow}`
+                )
                 isFinished = true
             }
 
             //vérification si égalité
-            if (counter === 42) {
+            if (counter === NUMBER_ROWS * NUMBER_COLUMNS) {
                 console.log("Il n'y a plus d'emplacements, la partie est nulle")
                 isFinished = true
             }
