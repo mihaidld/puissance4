@@ -1,7 +1,7 @@
 //choisir le nombre de lignes, colonnes et jetons alignés (par défaut 6, 7 et 4) : des nombres entiers, maximum 40 colonnes et 99 lignes.
-export const NUMBER_ROWS = 10
-export const NUMBER_COLUMNS = 11
-export const NUMBER_WINS = 3
+export const NUMBER_ROWS = 6
+export const NUMBER_COLUMNS = 7
+export const NUMBER_WINS = 4
 
 //création de l'array 2D
 export let arrayValues = []

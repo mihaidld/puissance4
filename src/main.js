@@ -44,9 +44,7 @@ while (!isFinished) {
         //jouer
         case input.startsWith('put(') &&
             input.endsWith(')') &&
-            (input.length == 'put()'.length + String(NUMBER_COLUMNS).length ||
-                input.length ==
-                    'put()'.length + String(NUMBER_COLUMNS).length - 1):
+            input.length <= 'put()'.length + 2:
             let columnNumber =
                 input[5] === ')' ? input.slice(4, 5) : input.slice(4, 6)
             counter++
